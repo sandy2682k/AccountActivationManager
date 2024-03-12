@@ -1,0 +1,65 @@
+---------------HTML----------------------
+
+<template>
+    <lightning-card title="Account Activation">
+        <lightning-input label="Account Activation Summary" value={summary} required onchange={handleSummaryChange}></lightning-input>
+        <lightning-button label="Activate Account" onclick={activateAccount}></lightning-button>
+    </lightning-card>
+</template>
+
+--------------------Javascript-----------------
+
+import { LightningElement, api, wire, track } from 'lwc';
+import { getRecord, updateRecord } from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import ACTIVE_FIELD from '@salesforce/schema/Account.Active__c';
+import SUMMARY_FIELD from '@salesforce/schema/Account.Account_Activation_Summary__c';
+
+export default class AccountActivation extends LightningElement {
+    @api recordId;
+    @track summary;
+
+    handleSummaryChange(event) {
+        this.summary = event.target.value;
+    }
+
+    activateAccount() {
+        if (!this.summary) {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error activating account',
+                    message: 'Account Activation Summary is required.',
+                    variant: 'error'
+                })
+            );
+            return;
+        }
+
+        const fields = {};
+        fields['Id'] = this.recordId;
+        fields[ACTIVE_FIELD.fieldApiName] = true;
+        fields[SUMMARY_FIELD.fieldApiName] = this.summary;
+
+        const recordInput = {fields};
+
+        updateRecord(recordInput)
+            .then(() => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Success',
+                        message: 'Account activated',
+                        variant: 'success'
+                    })
+                );
+            })
+            .catch(error => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error activating account',
+                        message: error.body.message,
+                        variant: 'error'
+                    })
+                );
+            });
+    }
+}
