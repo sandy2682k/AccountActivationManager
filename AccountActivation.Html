@@ -1,0 +1,16 @@
+<!-- Account Activation Manager -->
+<template>
+    <!-- The lightning-card component creates a card container for a group of information. -->
+    <lightning-card title="Account Activation">
+        <!-- Padding is added for better UI experience. -->
+        <div style="padding:10px;">
+            <!-- The lightning-input field captures the Account Activation Summary. -->
+            <lightning-input label="Account Activation Summary" value={summary} required onchange={handleSummaryChange}>
+            </lightning-input>
+            <div style="padding-top:10px;">
+                <!-- The lightning-button triggers the account activation process. -->
+                <lightning-button label="Activate Account" onclick={activateAccount}></lightning-button>
+            </div>
+        </div>
+    </lightning-card>
+</template>
